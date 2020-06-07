@@ -1,0 +1,32 @@
+#webpage {
+    min-height: 100%;
+    background-image: linear-gradient(to right,#feffdb, #ffd9f9);
+}
+
+#greeting-container {
+  margin-top: 20px;
+}
+
+.content {
+  margin-left: auto;
+  margin-right: auto;
+  width: 650px;
+  color: #850c32;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  line-height: 1.5;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+a:link {
+    color: #2aa345;
+}
+
+a:visited {
+    color: #2aa345;
+}
