@@ -24,9 +24,23 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+  private final ArrayList<String> messages;
+
+  public DataServlet(){
+      messages = new ArrayList<String>();
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("text/html;");
     response.getWriter().println("Hello Olivia!");
+  }
+
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Get the input from the form.
+    String message = request.getParameter("message-input");
+    this.messages.add(message);
+    // note: this URL will have to change once site is deployed
+    response.sendRedirect("https://8080-dot-12685145-dot-devshell.appspot.com/index.html");
   }
 }

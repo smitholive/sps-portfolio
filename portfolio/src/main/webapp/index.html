@@ -34,7 +34,14 @@
           Feel free to click around to learn more about me and the work I do!
       </p>
       <img src="/images/catbus.gif" alt="catbus" style="width:10vw;margin-top:10px" class="center">
-    <button onclick="getComments()" style="margin:15px">Fetch Comments</button>
+      <form style="margin:15px" action="/data" method="POST">
+        <p>Enter a message:</p>
+        <br>
+        <textarea name="message-input">Hey there!</textarea>
+        <br>
+        <input type="submit" />
+      </form>
+      <button onclick="getComments()" style="margin:15px">Fetch Comments</button>
       <div id="comment-container" class='widget'></div>
     </div>
     </div>
