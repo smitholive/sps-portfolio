@@ -30,6 +30,20 @@
           <a href="https://www.instagram.com/pinkkaloe" target="_blank">Instagram</a> - 
           <a href="https://www.instagram.com/karmakundraws" target="_blank">Art Instagram</a>
       </p>
+      <h2>Guestbook:</h2>
+      <form style="margin:15px" action="/data" method="POST">
+        <p>Name:</p>
+        <br>
+        <textarea name="name-input">Ben Paul</textarea>
+        <br>
+        <p>Your message:</p>
+        <br>
+        <textarea name="message-input">Hello!</textarea>
+        <br>
+        <input type="submit" />
+      </form>
+      <button onclick="getComments()" style="margin:15px">Fetch Entries</button>
+      <div id="comment-container" class='widget'></div>
     </div>
     </div>
   </body>
