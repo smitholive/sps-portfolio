@@ -16,7 +16,6 @@ package com.google.sps.servlets;
 
 import com.google.gson.Gson;
 import java.util.Date; 
-import java.util.ArrayList;
 import java.util.List;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -34,7 +33,24 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  public DataServlet(){
+  public DataServlet(){}
+
+  class Comment{
+      public String name;
+      public String message;
+      public String timestamp;
+
+      public Comment(String name, String message, String timestamp){
+          this.name = name;
+          this.message = message;
+          this.timestamp = timestamp;
+      }
+  }
+  
+  private String toGson(Comment comment) {
+    Gson gson = new Gson();
+    String json = gson.toJson(comment);
+    return json;
   }
 
   @Override
@@ -44,22 +60,22 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    ArrayList<String> names = new ArrayList<String>();
-    ArrayList<String> messages = new ArrayList<String>();
-    ArrayList<Date> timestamps = new ArrayList<Date>();
+    // iterate through data / entities and pull pertinent info from them
+    // encapsulate data in comment class
+    // then send respond with comment in JSON string format
+
+    response.setContentType("application/json;");
 
     for (Entity entity : results.asIterable()) {
+
       String name = (String) entity.getProperty("name");
       String message = (String) entity.getProperty("message");
       Date timestamp = new Date((long) entity.getProperty("timestamp"));
-      names.add(name);
-      messages.add(message);
-      timestamps.add(timestamp);
-    }
-    response.setContentType("text/html;");
-    for(int i = 0; i < messages.size(); i++){
-        response.getWriter().printf("%s at %s said: ", names.get(i), timestamps.get(i).toString());
-        response.getWriter().println(messages.get(i));
+
+      Comment comment = new Comment(name, message, timestamp.toString());
+      String json = toGson(comment);
+      response.getWriter().println(json);
+      //response.getWriter().printf("%s at %s said: %s/n", name, timestamp.toString(), message);
     }
   }
 
@@ -78,7 +94,6 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(entryEntity);
 
-    // note: this URL will have to change once site is deployed
-    response.sendRedirect("https://8080-dot-12685145-dot-devshell.appspot.com/contact.html");
+    response.sendRedirect("/contact.html");
   }
 }
