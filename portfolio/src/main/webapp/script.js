@@ -26,3 +26,16 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
+
+/**
+ * Loads in comment data
+ * fetch returns a promise which becomes a stream when served
+ * we then use the text function (which is another promise since text()
+ * can take a little while) to turn that stream into HTML text
+ * which we then place into the appropriate HTML container
+ */
+ function getComments(){
+     fetch('/data').then(response => response.text()).then((comment) => {
+         document.getElementById('comment-container').innerText = comment;
+     })
+ }
