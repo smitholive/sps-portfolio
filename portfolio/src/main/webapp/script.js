@@ -34,18 +34,18 @@ function addRandomGreeting() {
  * can take a little while) to turn that stream into HTML text
  * which we then place into the appropriate HTML container
  */
- function getComments(){
+ function getComments() {
     fetch('/data').then(response => response.json()).then((commentsJson) => {
       const commentsElement = document.getElementById('comment-container');
       commentsElement.innerHTML = '';
 
       // iterate through all the comment JSON objects and
       // format them correctly
-      for(var i = 0; i < commentsJson.length; i++){
+      for (var i = 0; i < commentsJson.length; i++) {
         var comment = commentsJson[i];
         commentsElement.innerHTML += comment.name + ' at ' 
-        + comment.timestamp 
-        + ' said: ' + comment.message + '<br>';
+        + comment.timestamp + ' said: ' + comment.message + '<br>' 
+        + 'Sentiment Score of above message: ' + comment.sentimentScore.toString() + '<br>';
       }
     })
  }
