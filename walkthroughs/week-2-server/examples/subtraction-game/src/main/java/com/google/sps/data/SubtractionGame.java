@@ -33,7 +33,6 @@ public class SubtractionGame {
   /** Whether this game has ended, i.e. one of the players reached 0. */
   private boolean gameOver = false;
 
-
   /** Returns whether this game has ended. */
   public boolean isGameOver() {
     return gameOver;
