@@ -42,7 +42,7 @@ public class DataServlet extends HttpServlet {
       public String message;
       public String timestamp;
 
-      public Comment(String name, String message, String timestamp){
+      public Comment(String name, String message, String timestamp) {
           this.name = name;
           this.message = message;
           this.timestamp = timestamp;
