@@ -70,7 +70,6 @@ public class DataServlet extends HttpServlet {
     ArrayList<Comment> jsonArray = new ArrayList<Comment>();
 
     for (Entity entity : results.asIterable()) {
-
       String name = (String) entity.getProperty("name");
       String message = (String) entity.getProperty("message");
       Date timestamp = new Date((long) entity.getProperty("timestamp"));
