@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  public DataServlet(){}
+  public DataServlet() {}
 
   class Comment {
       public String name;
