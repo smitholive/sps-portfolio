@@ -44,8 +44,7 @@ function addRandomGreeting() {
       for(var i = 0; i < commentsJson.length; i++){
         var comment = commentsJson[i];
         commentsElement.innerHTML += comment.name + ' at ' 
-        + comment.timestamp 
-        + ' said: ' + comment.message + '<br>';
+        + comment.timestamp + ' said: ' + comment.message + '<br>';
       }
     })
  }
