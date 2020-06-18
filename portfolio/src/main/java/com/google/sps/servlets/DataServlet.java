@@ -17,10 +17,12 @@ package com.google.sps.servlets;
 import com.google.gson.Gson;
 import java.util.Date; 
 import java.util.List;
+import java.util.ArrayList;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import java.io.IOException;
@@ -47,9 +49,9 @@ public class DataServlet extends HttpServlet {
       }
   }
   
-  private String toGson(Comment comment) {
+  private String toGson(ArrayList<Comment> comments) {
     Gson gson = new Gson();
-    String json = gson.toJson(comment);
+    String json = gson.toJson(comments);
     return json;
   }
 
@@ -65,6 +67,7 @@ public class DataServlet extends HttpServlet {
     // then send respond with comment in JSON string format
 
     response.setContentType("application/json;");
+    ArrayList<Comment> jsonArray = new ArrayList<Comment>();
 
     for (Entity entity : results.asIterable()) {
 
@@ -73,10 +76,9 @@ public class DataServlet extends HttpServlet {
       Date timestamp = new Date((long) entity.getProperty("timestamp"));
 
       Comment comment = new Comment(name, message, timestamp.toString());
-      String json = toGson(comment);
-      response.getWriter().println(json);
-      //response.getWriter().printf("%s at %s said: %s/n", name, timestamp.toString(), message);
+      jsonArray.add(comment);
     }
+    response.getWriter().println(toGson(jsonArray));
   }
 
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
