@@ -103,7 +103,7 @@ public class DataServlet extends HttpServlet {
     entryEntity.setProperty("name", name);
     entryEntity.setProperty("message", message);
     entryEntity.setProperty("timestamp", date.getTime());
-    entryEntity.setProperty("sentimentScore", (float) sentiment.getScore());
+    entryEntity.setProperty("sentimentScore", sentiment.getScore());
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(entryEntity);
