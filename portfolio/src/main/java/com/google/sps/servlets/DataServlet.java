@@ -14,13 +14,16 @@
 
 package com.google.sps.servlets;
 
+// non-static imports
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
+import com.google.cloud.language.v1.Document;
+
+// static imports
 import com.google.gson.Gson;
 import java.util.Date; 
 import java.util.List;
 import java.util.ArrayList;
-import com.google.cloud.language.v1.LanguageServiceClient;
-import com.google.cloud.language.v1.Sentiment;
-import com.google.cloud.language.v1.Document;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -34,7 +37,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that handles comment data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
