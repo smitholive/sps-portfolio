@@ -14,24 +14,27 @@
 
 package com.google.sps.servlets;
 
-import com.google.gson.Gson;
-import java.util.Date; 
-import java.util.List;
-import java.util.ArrayList;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
+import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Date; 
+import java.util.List;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that handles comment data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
@@ -41,11 +44,13 @@ public class DataServlet extends HttpServlet {
       public String name;
       public String message;
       public String timestamp;
+      public float sentimentScore;
 
-      public Comment(String name, String message, String timestamp) {
+      public Comment(String name, String message, String timestamp, float sentimentScore) {
           this.name = name;
           this.message = message;
           this.timestamp = timestamp;
+          this.sentimentScore = sentimentScore;
       }
   }
   
@@ -73,8 +78,9 @@ public class DataServlet extends HttpServlet {
       String name = (String) entity.getProperty("name");
       String message = (String) entity.getProperty("message");
       Date timestamp = new Date((long) entity.getProperty("timestamp"));
+      float sentimentScore = (float) ((double) entity.getProperty("sentimentScore"));
 
-      Comment comment = new Comment(name, message, timestamp.toString());
+      Comment comment = new Comment(name, message, timestamp.toString(), sentimentScore);
       jsonArray.add(comment);
     }
     response.getWriter().println(toGson(jsonArray));
@@ -85,12 +91,19 @@ public class DataServlet extends HttpServlet {
     String message = request.getParameter("message-input");
     String name = request.getParameter("name-input");
     // get date & time of post request
-    Date date = new Date(); 
+    Date date = new Date();
+
+    Document doc =
+      Document.newBuilder().setContent(message).setType(Document.Type.PLAIN_TEXT).build();
+    LanguageServiceClient languageService = LanguageServiceClient.create();
+    Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment(); 
+    languageService.close();
 
     Entity entryEntity = new Entity("Entry");
-    entryEntity.setProperty("timestamp", date.getTime());
-    entryEntity.setProperty("message", message);
     entryEntity.setProperty("name", name);
+    entryEntity.setProperty("message", message);
+    entryEntity.setProperty("timestamp", date.getTime());
+    entryEntity.setProperty("sentimentScore", sentiment.getScore());
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(entryEntity);
