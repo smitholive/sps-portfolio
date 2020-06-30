@@ -29,7 +29,7 @@ public final class FindMeetingQuery {
      for(String eventAttendee : eventAttendees) {
         for(String requestAttendee : requestAttendees) {
             if(requestAttendee.equals(eventAttendee)) {
-                return false;
+                return true;
             }
         }
      }
@@ -63,7 +63,7 @@ public final class FindMeetingQuery {
 
     // filter out events that do not pertain to the people in our meeting request
     Collection<Event> filteredEvents = filterAttendeesIntersect(events, request);
-
+    
     if(filteredEvents.isEmpty()){ // edge case: events is empty; all day is open
       openings.add(TimeRange.WHOLE_DAY);
       return openings;
@@ -82,7 +82,7 @@ public final class FindMeetingQuery {
     TimeRange temp = timeIterator.next();
 
     // edge case: start of day
-    if(temp.start() < TimeRange.START_OF_DAY) {
+    if(temp.start() > TimeRange.START_OF_DAY) {
       openings.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, temp.start(), false));
     }
 
@@ -94,7 +94,6 @@ public final class FindMeetingQuery {
       // (recall that they are sorted and that Collections does not store duplicates)
       temp = timeIterator.next();
       int nextStart = temp.start();
-
       if(endTime < nextStart) {
         openings.add(TimeRange.fromStartDuration(endTime, nextStart - endTime));
       }
@@ -103,7 +102,7 @@ public final class FindMeetingQuery {
     // edge case: end of day
     if(temp.start() < TimeRange.END_OF_DAY) {
       int startTime = temp.start() + temp.duration();
-      openings.add(TimeRange.fromStartDuration(startTime, TimeRange.END_OF_DAY - startTime));
+      openings.add(TimeRange.fromStartDuration(startTime, TimeRange.END_OF_DAY - startTime + 1));
     }
 
     return openings; // question: do we want to return empty if no openings exist?
