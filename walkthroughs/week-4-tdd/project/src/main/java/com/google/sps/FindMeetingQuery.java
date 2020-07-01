@@ -61,6 +61,9 @@ public final class FindMeetingQuery {
     // initialize return value
     Collection<TimeRange> openings = new ArrayList<TimeRange>();
 
+    if(request.getDuration() > TimeRange.WHOLE_DAY.duration()) { // edge case: request longer than a day
+        return openings;  // return empty collection
+    }
     // filter out events that do not pertain to the people in our meeting request
     Collection<Event> filteredEvents = filterAttendeesIntersect(events, request);
     
@@ -79,30 +82,29 @@ public final class FindMeetingQuery {
     Collections.sort(eventTimes, TimeRange.ORDER_BY_START);
     Iterator<TimeRange> timeIterator = eventTimes.iterator();
 
-    TimeRange temp = timeIterator.next();
+    TimeRange temp1 = timeIterator.next();
+    TimeRange temp2;
 
     // edge case: start of day
-    if(temp.start() > TimeRange.START_OF_DAY) {
-      openings.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, temp.start(), false));
+    if(temp1.start() > TimeRange.START_OF_DAY) {
+      openings.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, temp1.start(), false));
     }
 
     // for every TimeRange
     while(timeIterator.hasNext()) {
-      // compute end time of current TimeRange
-      int endTime = temp.start() + temp.duration();
       // retrieve the start time of next TimeRange 
       // (recall that they are sorted and that Collections does not store duplicates)
-      temp = timeIterator.next();
-      int nextStart = temp.start();
-      if(endTime < nextStart) {
-        openings.add(TimeRange.fromStartDuration(endTime, nextStart - endTime));
+      temp2 = timeIterator.next();
+      if(!temp1.overlaps(temp2)) {
+        openings.add(TimeRange.fromStartEnd(temp1.start() + temp1.duration(), temp2.start(), false));
       }
+      temp1 = TimeRange.fromStartDuration(temp2.start(), temp2.duration());
     }
     
     // edge case: end of day
-    if(temp.start() < TimeRange.END_OF_DAY) {
-      int startTime = temp.start() + temp.duration();
-      openings.add(TimeRange.fromStartDuration(startTime, TimeRange.END_OF_DAY - startTime + 1));
+    if(temp1.start() < TimeRange.END_OF_DAY) {
+      //int startTime = temp.start() + temp.duration();
+      openings.add(TimeRange.fromStartEnd(temp1.start() + temp1.duration(), TimeRange.END_OF_DAY, true));
     }
 
     return openings; // question: do we want to return empty if no openings exist?
@@ -114,7 +116,7 @@ public final class FindMeetingQuery {
     // for every event:
     //   calculate end time : event start time + event duration
     //   if end time < start time of next event
-            // create a time range for the end time + () and add it to the return value
+            // create a time range for the end time and add it to the return value
     // return the collection of time ranges return value
   }
 }
