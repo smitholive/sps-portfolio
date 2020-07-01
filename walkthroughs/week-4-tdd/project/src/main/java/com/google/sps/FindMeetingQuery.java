@@ -39,7 +39,6 @@ public final class FindMeetingQuery {
       // a function that takes a collection of events and a meeting request
       // it returns a collection of events where the events' attendees intersect with
       // the attendees of the meeting request
-
       Collection<Event> filtered = new ArrayList<Event>();
       Collection<String> requestAttendees = request.getAttendees();
 
@@ -55,6 +54,20 @@ public final class FindMeetingQuery {
     // a method that returns a collection of timeranges where people are free to meet
     // event: a period of time where people are busy
     // "events" contains data that referring to when people are busy
+
+    // algorithm works as follows:
+    // check null cases & request validity
+    // filter events s.t. we maintain events that pertain to the attendees in
+    //   the request
+    // sort events by start time
+    // check start of day edge case
+    // for every event:
+    //   check if c
+    //   if end time < start time of next event
+    // check end of day edge case
+    // create a time range for the end time and add it to the return value
+    // return the collection of time ranges return value
+
     if(events == null || request == null) { // null case check
         throw new UnsupportedOperationException("Null Parameter 'events' or 'reqest'.");
     }
@@ -95,28 +108,25 @@ public final class FindMeetingQuery {
       // retrieve the start time of next TimeRange 
       // (recall that they are sorted and that Collections does not store duplicates)
       temp2 = timeIterator.next();
-      if(!temp1.overlaps(temp2)) {
-        openings.add(TimeRange.fromStartEnd(temp1.start() + temp1.duration(), temp2.start(), false));
+
+      int endTime1 = temp1.start() + temp1.duration();
+      int endTime2 = temp2.start() + temp2.duration();
+      
+      if(!temp1.overlaps(temp2) && endTime1 < endTime2) {
+        int gap = temp2.start() - endTime1;
+        if(gap >= request.getDuration()) {
+          openings.add(TimeRange.fromStartEnd(temp1.start() + temp1.duration(), temp2.start(), false));
+        }
       }
       temp1 = TimeRange.fromStartDuration(temp2.start(), temp2.duration());
     }
     
     // edge case: end of day
-    if(temp1.start() < TimeRange.END_OF_DAY) {
+    if(temp1.start() + temp1.duration() < TimeRange.END_OF_DAY) {
       //int startTime = temp.start() + temp.duration();
       openings.add(TimeRange.fromStartEnd(temp1.start() + temp1.duration(), TimeRange.END_OF_DAY, true));
     }
 
     return openings; // question: do we want to return empty if no openings exist?
-    // algorithm works as follows:
-    // check null cases
-    // filter events s.t. we only test for events that pertain to the attendees in
-    //   the request
-    // sort events by start time
-    // for every event:
-    //   calculate end time : event start time + event duration
-    //   if end time < start time of next event
-            // create a time range for the end time and add it to the return value
-    // return the collection of time ranges return value
   }
 }
